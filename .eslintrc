@@ -1,0 +1,28 @@
+{
+  "extends": ["airbnb", "plugin:jest/recommended"],
+  "rules": {
+    "func-names": ["error", "never"],
+    "no-underscore-dangle": "off",
+    "indent": [ 2, 4, {"SwitchCase": 1}],
+    "max-len": [1, 120, 4],
+    "no-param-reassign": [2, {"props": false}],
+    "linebreak-style": 0,
+    "no-trailing-spaces": "off",
+    "no-multiple-empty-lines": "off",
+    "consistent-return": "off",
+    "global-require": "off"
+  },
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "globals": {},
+
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["./"]
+      }
+    }
+  }
+}

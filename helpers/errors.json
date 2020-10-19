@@ -1,0 +1,39 @@
+{
+  "REQUEST_NOT_FOUND": {
+    "code": "REQUEST_NOT_FOUND",
+    "message": "Request not found"
+  },
+  "INTERNAL_SERVER_ERROR": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "Internal server error"
+  },
+  "BAD_REQUEST": {
+    "code": "BAD_REQUEST",
+    "message": "Bad request"
+  },
+  "NOT_LOGGED": {
+    "code": "IDENTIFICATION_REQUIRED",
+    "message": "Authentication is required"
+  },
+  "INVALID_MISSING_PARAMS": {
+    "code": "INVALID_MISSING_PARAMS",
+    "message": "Invalid or missing settings, make sure you have the latest version of the application"
+  },
+  "RISE_WRONG_TOKEN": {
+    "code": "RISE_WRONG_TOKEN",
+    "message": "The token in the request is incorrect. Please provide correct personal token."
+  },
+  "TOKEN_REQUIRED": {
+    "code": "TOKEN_REQUIRED",
+    "message": "Authentication error. Token required."
+  },
+  "CURRENT_ALREADY_GIT_REPOSITORY": {
+    "code": "TOKEN_REQUIRED",
+    "message": "Current folder is Already a Git repository!"
+  },
+  "REMOTE_REPOSITORY_ALREADY_EXIST": {
+    "code": "REMOTE_REPOSITORY_ALREADY_EXIST",
+    "message": "There is already a remote repository with the same name"
+  }
+}
+
