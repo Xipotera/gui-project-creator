@@ -47,6 +47,76 @@ class Gitlab {
             throw errorMessage;
         }
     }
+
+    async configureBranchRepository(data) {
+        const options = {
+            method: 'post',
+            url: `${this.url}/${get(data, 'projectId')}/repository/branches`,
+            headers: { Authorization: `Bearer ${this.token}` },
+            params: {
+                branch: get(data, 'name'),
+                ref: get(data, 'origin'),
+            },
+            responseType: 'json',
+        };
+
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            console.log(err);
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    }
+
+    /**
+     * 0 => No access
+     * 30 => Developer access
+     * 40 => Maintainer access
+     * 60 => Admin access
+     * @param data
+     * @returns {Promise<*>}
+     */
+    async configureBranchAccessRightRepository(data) {
+        const options = {
+            method: 'post',
+            url: `${this.url}/${get(data, 'projectId')}/protected_branches`,
+            headers: { Authorization: `Bearer ${this.token}` },
+            params: {
+                name: get(data, 'name'),
+                push_access_level: get(data, 'push_access_level', 30),
+                merge_access_level: get(data, 'merge_access_level', 30),
+                unprotect_access_level: get(data, 'unprotect_access_level', 40),
+            },
+            responseType: 'json',
+        };
+
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            console.log(err);
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    }
+
+    async unprotectMasterBranch(data) {
+        const options = {
+            method: 'delete',
+            url: `${this.url}/${get(data, 'projectId')}/protected_branches/${get(data, 'name')}`,
+            headers: { Authorization: `Bearer ${this.token}` },
+            responseType: 'json',
+        };
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    }
 }
 
 module.exports = Gitlab;
