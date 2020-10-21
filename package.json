@@ -1,10 +1,10 @@
 {
-  "name": "gui-project-creator",
+  "name": "project-creator",
   "version": "1.0.0",
   "description": "a 'gui project creator' on steroids\n",
   "main": "index.js",
   "bin": {
-    "start": "./index.js"
+    "project-start": "./index.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

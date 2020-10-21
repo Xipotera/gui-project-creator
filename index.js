@@ -24,16 +24,19 @@ program
     });
 program.parse(process.argv);
 
+console.log(
+    chalk.yellow(
+        figlet.textSync('HelloMyBot', { horizontalLayout: 'full' }),
+    ),
+);
+
 if (program.configure) {
-    console.log(program.opts());
+    const config = require('./lib/configStorage');
+    config.clearConfigStore();
+    console.log(chalk.red('config was cleared'));
+    process.exit(1);
 } else {
 // title app on ASCII
-    console.log(
-        chalk.yellow(
-            figlet.textSync('HelloMyBot', { horizontalLayout: 'full' }),
-        ),
-    );
-
     /**
      * @description: first verifying if the current folder already have a .git folder
      * case is true a gir repository already exist then exit
