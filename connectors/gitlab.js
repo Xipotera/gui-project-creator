@@ -3,14 +3,14 @@ const { get } = require('lodash');
 
 class Gitlab {
     constructor(credentials) {
-        this.url = get(credentials, 'url', 'https://gitlab.com/api/v4/projects');
+        this.url = get(credentials, 'url', 'https://gitlab.com/api/v4');
         this.token = get(credentials, 'personal_token');
     }
 
     async verifyPersonalToken() {
         const options = {
             method: 'get',
-            url: this.url,
+            url: `${this.url}/projects`,
             headers: { Authorization: `Bearer ${this.token}` },
             params: {
                 owned: true,
@@ -33,7 +33,7 @@ class Gitlab {
     async createRepository(data) {
         const options = {
             method: 'post',
-            url: this.url,
+            url: `${this.url}/projects`,
             headers: { Authorization: `Bearer ${this.token}` },
             data,
             responseType: 'json',
@@ -51,7 +51,7 @@ class Gitlab {
     async configureBranchRepository(data) {
         const options = {
             method: 'post',
-            url: `${this.url}/${get(data, 'projectId')}/repository/branches`,
+            url: `${this.url}/projects/${get(data, 'projectId')}/repository/branches`,
             headers: { Authorization: `Bearer ${this.token}` },
             params: {
                 branch: get(data, 'name'),
@@ -81,7 +81,7 @@ class Gitlab {
     async configureBranchAccessRightRepository(data) {
         const options = {
             method: 'post',
-            url: `${this.url}/${get(data, 'projectId')}/protected_branches`,
+            url: `${this.url}/projects/${get(data, 'projectId')}/protected_branches`,
             headers: { Authorization: `Bearer ${this.token}` },
             params: {
                 name: get(data, 'name'),
@@ -105,7 +105,23 @@ class Gitlab {
     async unprotectMasterBranch(data) {
         const options = {
             method: 'delete',
-            url: `${this.url}/${get(data, 'projectId')}/protected_branches/${get(data, 'name')}`,
+            url: `${this.url}/projects/${get(data, 'projectId')}/protected_branches/${get(data, 'name')}`,
+            headers: { Authorization: `Bearer ${this.token}` },
+            responseType: 'json',
+        };
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    }
+
+    async groupsRepository() {
+        const options = {
+            method: 'get',
+            url: `${this.url}/groups`,
             headers: { Authorization: `Bearer ${this.token}` },
             responseType: 'json',
         };
