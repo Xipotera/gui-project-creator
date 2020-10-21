@@ -26,7 +26,7 @@ program.parse(process.argv);
 
 console.log(
     chalk.yellow(
-        figlet.textSync('HelloMyBot', { horizontalLayout: 'full' }),
+        figlet.textSync('Project Creator', { horizontalLayout: 'full' }),
     ),
 );
 
