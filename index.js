@@ -36,7 +36,7 @@ if (program.configure) {
     console.log(chalk.red('config was cleared'));
     process.exit(1);
 } else {
-// title app on ASCII
+    // title app on ASCII
     /**
      * @description: first verifying if the current folder already have a .git folder
      * case is true a gir repository already exist then exit
@@ -54,8 +54,7 @@ if (program.configure) {
             // Create remote repository
             const { projectId, name, url } = await repo.createRemoteRepo(Gitlab);
 
-            // Lambda project Id : 12551231
-            // HMB : oSdiazaxqgvAiv9mZ4bR
+
             // Set up local folder with skeleton repository
             await repo.skeletonRepoConfig(name);
 
