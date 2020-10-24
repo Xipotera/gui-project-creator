@@ -133,6 +133,22 @@ class Gitlab {
             throw errorMessage;
         }
     }
+
+    async getProjects() {
+        const options = {
+            method: 'get',
+            url: `${this.url}/projects?owned=true&membership=true&search=&visibility&per_page=1`,
+            headers: { Authorization: `Bearer ${this.token}` },
+            responseType: 'json',
+        };
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    }
 }
 
 module.exports = Gitlab;

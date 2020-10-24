@@ -6,7 +6,7 @@ const request = require('request');
 const format = require('streaming-format');
 
 module.exports = {
-    getSkeletonRepository: async ({
+    getTemplateRepository: async ({
         projectId, token, branchName, projectName,
     }) => {
         const failedHttp = function (response) {

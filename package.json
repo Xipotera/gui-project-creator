@@ -2,9 +2,9 @@
   "name": "@xipotera/project-creator",
   "version": "1.0.1",
   "description": "a 'gui project creator' on steroids\n",
-  "main": "index.js",
+  "main": "main.js",
   "bin": {
-    "project-start": "./index.js"
+    "project-start": "main.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -33,6 +33,7 @@
     "gunzip-maybe": "^1.4.2",
     "http-status-codes": "^2.1.4",
     "inquirer": "^7.3.3",
+    "inquirer-search-list": "^1.2.6",
     "lodash": "^4.17.20",
     "minimist": "^1.2.5",
     "request": "^2.88.2",

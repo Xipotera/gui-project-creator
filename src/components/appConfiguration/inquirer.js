@@ -1,10 +1,8 @@
 const inquirer = require('inquirer');
 const { get, snakeCase } = require('lodash');
-const config = require('./configStorage');
 
 module.exports = {
-    askAppGlobalConfiguration: () => {
-        const app = config.getAsciiArt();
+    askAppGlobalConfiguration: (app) => {
         const questions = [
             {
                 when: !get(app, 'title'),
@@ -17,9 +15,6 @@ module.exports = {
 
         return inquirer.prompt(questions);
     },
-    storeAppGlobalConfiguration: (data) => {
-        config.setAsciiArt(data);
-    },
     askProjectConfiguration: () => {
         const questions = [
             {
@@ -30,7 +25,7 @@ module.exports = {
                 choices: [
                     'All',
                     'Personal Token Access',
-                    'Skeleton Repository',
+                    'Template Repository',
                     new inquirer.Separator(),
                     'Exit',
                 ],
@@ -39,8 +34,8 @@ module.exports = {
                     switch (snakeCase(val)) {
                         case 'personal_token_access':
                             return 'gitlab';
-                        case 'skeleton_repository':
-                            return 'skeletons';
+                        case 'template_repository':
+                            return 'templates';
                         default:
                             return val.toLowerCase();
                     }
@@ -66,31 +61,17 @@ module.exports = {
             },
             {
                 when(answers) {
-                    return answers.choice === 'skeletons';
+                    return answers.choice === 'templates';
                 },
                 type: 'confirm',
                 name: 'confirm_input',
-                message: 'Are you sure you want to re-configure skeleton ?',
+                message: 'Are you sure you want to re-configure template ?',
                 default: false,
             },
         ];
 
         return inquirer.prompt(questions);
     },
-    launchAction: async (data) => {
-        switch (true) {
-            case !!(get(data, 'choice') === 'all' && get(data, 'confirm_input') === true):
-                config.clearConfigStore();
-                break;
-            case !!(get(data, 'choice') === 'gitlab' && get(data, 'confirm_input') === true):
-            case !!(get(data, 'choice') === 'skeleton' && get(data, 'confirm_input') === true):
-                config.clearSpecificKey(get(data, 'choice'));
-                break;
-            default:
-                process.exit(1);
-        }
-    },
 
-    initApp: () => config.getAsciiArt(),
 
 };

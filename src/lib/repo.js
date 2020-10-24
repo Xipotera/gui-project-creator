@@ -6,11 +6,11 @@ const shell = require('shelljs');
 
 const { Spinner } = CLI;
 const { get, sortBy } = require('lodash');
-const inquirer = require('./inquirer');
+const { UserRepoInquirer } = require('../components/userRepository');
 
-const { getSkeletonRepository } = require('./skeleton');
+const { getTemplateRepository } = require('./template');
 
-const config = require('./configStorage');
+const config = require('../config');
 
 module.exports = {
     createRemoteRepo: async (Gitlab) => {
@@ -18,7 +18,7 @@ module.exports = {
 
         const groups = sortBy(await Gitlab.groupsRepository(), ['full_path']).map((group) => ({ full_path: group.full_path, id: group.id }));
 
-        const answers = await inquirer.askRepoDetails(storedData, groups);
+        const answers = await UserRepoInquirer.askRepoDetails(storedData, groups);
         const argv = require('minimist')(process.argv.slice(2));
         const data = {
             name: get(answers, 'name', argv._[0]),
@@ -43,38 +43,6 @@ module.exports = {
         }
     },
 
-    skeletonRepoConfig: async () => {
-        const storedData = config.getStoredSkeletonRepositoryDefaultData('aws-skeleton');
-        const answers = await inquirer.askSkeletonRepositoryDetails(storedData);
-        const data = {
-            skeleton_project_name: 'aws-skeleton',
-            server: 'gitlab',
-            skeleton_project_id: get(answers, 'skeleton_project_id', get(storedData, 'skeleton_project_id')),
-            project_token: get(answers, 'project_token', get(storedData, 'project_token')),
-            branch: 'master',
-        };
-
-        // Store Namespace ID and visibility
-        config.setSkeletonRepositoryDefaultData(data);
-    },
-
-    skeletonRepoDownload: async (projectName) => {
-        const status = new Spinner('Initializing project repository with skeleton files...');
-        status.start();
-
-        const data = config.getStoredSkeletonRepositoryDefaultData('aws-skeleton');
-
-        try {
-            await getSkeletonRepository({
-                projectId: get(data, 'skeleton_project_id'),
-                token: get(data, 'project_token'),
-                branchName: get(data, 'branch'),
-                projectName,
-            });
-        } finally {
-            status.stop();
-        }
-    },
     setupRepo: async (folder, url) => {
         const status = new Spinner('Initializing local repository and pushing to remote...');
         status.start();

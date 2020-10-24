@@ -2,11 +2,11 @@ const CLI = require('clui');
 
 const { Spinner } = CLI;
 const { get, isEmpty } = require('lodash');
-const inquirer = require('./inquirer');
+const { UserRepoInquirer } = require('../components/userRepository');
 
 const GitlabClass = require('../connectors/gitlab');
 
-const config = require('./configStorage');
+const config = require('../config');
 
 
 async function getGitlabServicesAccess() {
@@ -14,7 +14,7 @@ async function getGitlabServicesAccess() {
     let credentials = config.getStoredGitlabPersonalToken();
     // No token found, ask personal token to access Gitlab account
     if (isEmpty(get(credentials, 'personal_token'))) {
-        credentials = await inquirer.askGitlabPersonalToken();
+        credentials = await UserRepoInquirer.askUserGitlabPersonalToken();
     }
     const status = new Spinner('Authenticating you, please wait...');
     status.start();

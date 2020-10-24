@@ -1,7 +1,7 @@
 const ConfigStore = require('configstore');
-const { get } = require('lodash');
+const { get, isEmpty } = require('lodash');
 
-const pkg = require('../package.json');
+const pkg = require('../../package.json');
 
 const conf = new ConfigStore(pkg.name);
 
@@ -22,25 +22,26 @@ module.exports = {
     },
     getStoredGitlabPersonalToken: () => ({ personal_token: conf.get('gitlab.personal_token') }),
     setRepositoryDefaultData: (data) => {
-        conf.set('repository', {
-            visibility: get(data, 'visibility'),
-            namespace_id: get(data, 'namespace.id'),
-        });
+        conf.set('repository.visibility', get(data, 'visibility'));
+        if (isEmpty(get(data, 'namespace.id'))) {
+            conf.delete('repository.namespace_id');
+        } else {
+            conf.set('repository.namespace_id', get(data, 'namespace.id'));
+        }
     },
     getStoredRepositoryDefaultData: () => ({
         visibility: conf.get('repository.visibility'),
         namespace_id: conf.get('repository.namespace_id'),
     }),
-    setSkeletonRepositoryDefaultData: (data) => {
-        conf.set(`skeletons.${[get(data, 'skeleton_project_name')]}`, {
-            project_id: get(data, 'skeleton_project_id'),
-            token: get(data, 'project_token'),
-            branch: get(data, 'branch'),
-        });
+    // Store a new template project configuration
+    setTemplateRepositoryDefaultData: (data) => {
+        conf.set('templates', { ...conf.get('templates'), ...data });
     },
-    getStoredSkeletonRepositoryDefaultData: (projectName) => ({
-        skeleton_project_id: conf.get(`skeletons.${projectName}.project_id`),
-        project_token: conf.get(`skeletons.${projectName}.token`),
-        branch: conf.get(`skeletons.${projectName}.branch`),
+    // Return all stored templates
+    getTemplatesConfiguration: () => ({
+        templates: conf.get('templates'),
+    }),
+    getTemplatesConfigurationByName: (templateName) => ({
+        templates: conf.get(`templates.${templateName}`),
     }),
 };
