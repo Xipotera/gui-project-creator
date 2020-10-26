@@ -1,17 +1,15 @@
 const axios = require('axios');
 const { get } = require('lodash');
 
-class Gitlab {
-    constructor(credentials) {
-        this.url = get(credentials, 'url', 'https://gitlab.com/api/v4');
-        this.token = get(credentials, 'personal_token');
-    }
+const url = 'https://gitlab.com/api/v4';
 
-    async verifyPersonalToken() {
+
+module.exports = {
+    verifyPersonalToken: async (token) => {
         const options = {
             method: 'get',
-            url: `${this.url}/projects`,
-            headers: { Authorization: `Bearer ${this.token}` },
+            url: `${url}/projects`,
+            headers: { Authorization: `Bearer ${token}` },
             params: {
                 owned: true,
                 membership: true,
@@ -28,13 +26,61 @@ class Gitlab {
             const errorMessage = require('../helpers/ServerErrors')(err);
             throw errorMessage;
         }
-    }
+    },
+    getProjectById: async (token, projectId) => {
+        const options = {
+            method: 'get',
+            url: `${url}/projects/${projectId}`,
+            headers: { Authorization: `Bearer ${token}` },
+            responseType: 'json',
+        };
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    },
+    getBranchRepository: async (token, projectId) => {
+        const options = {
+            method: 'get',
+            url: `${url}/projects/${projectId}/repository/branches`,
+            headers: { Authorization: `Bearer ${token}` },
+            responseType: 'json',
+        };
 
-    async createRepository(data) {
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            console.log(err);
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    },
+
+    groupsRepository: async (token) => {
+        const options = {
+            method: 'get',
+            url: `${url}/groups`,
+            headers: { Authorization: `Bearer ${token}` },
+            responseType: 'json',
+        };
+        try {
+            const result = await axios(options);
+            return get(result, 'data');
+        } catch (err) {
+            const errorMessage = require('../helpers/ServerErrors')(err);
+            throw errorMessage;
+        }
+    },
+
+    createRepository: async (token, data) => {
         const options = {
             method: 'post',
-            url: `${this.url}/projects`,
-            headers: { Authorization: `Bearer ${this.token}` },
+            url: `${url}/projects`,
+            headers: { Authorization: `Bearer ${token}` },
             data,
             responseType: 'json',
         };
@@ -43,114 +89,102 @@ class Gitlab {
             const result = await axios(options);
             return get(result, 'data');
         } catch (err) {
-            const errorMessage = require('../helpers/ServerErrors')(err);
+            const errorMessage = get(err, 'data');
             throw errorMessage;
         }
-    }
+    },
 
-    async configureBranchRepository(data) {
-        const options = {
-            method: 'post',
-            url: `${this.url}/projects/${get(data, 'projectId')}/repository/branches`,
-            headers: { Authorization: `Bearer ${this.token}` },
-            params: {
-                branch: get(data, 'name'),
-                ref: get(data, 'origin'),
-            },
-            responseType: 'json',
-        };
 
-        try {
-            const result = await axios(options);
-            return get(result, 'data');
-        } catch (err) {
-            console.log(err);
-            const errorMessage = require('../helpers/ServerErrors')(err);
-            throw errorMessage;
-        }
-    }
 
-    /**
-     * 0 => No access
-     * 30 => Developer access
-     * 40 => Maintainer access
-     * 60 => Admin access
-     * @param data
-     * @returns {Promise<*>}
-     */
-    async configureBranchAccessRightRepository(data) {
-        const options = {
-            method: 'post',
-            url: `${this.url}/projects/${get(data, 'projectId')}/protected_branches`,
-            headers: { Authorization: `Bearer ${this.token}` },
-            params: {
-                name: get(data, 'name'),
-                push_access_level: get(data, 'push_access_level', 30),
-                merge_access_level: get(data, 'merge_access_level', 30),
-                unprotect_access_level: get(data, 'unprotect_access_level', 40),
-            },
-            responseType: 'json',
-        };
+    // configureBranchRepository: async (data) => {
+    //     const options = {
+    //         method: 'post',
+    //         url: `${url}/projects/${get(data, 'projectId')}/repository/branches`,
+    //         headers: { Authorization: `Bearer ${this.token}` },
+    //         params: {
+    //             branch: get(data, 'name'),
+    //             ref: get(data, 'origin'),
+    //         },
+    //         responseType: 'json',
+    //     };
+    //
+    //     try {
+    //         const result = await axios(options);
+    //         return get(result, 'data');
+    //     } catch (err) {
+    //         console.log(err);
+    //         const errorMessage = require('../helpers/ServerErrors')(err);
+    //         throw errorMessage;
+    //     }
+    // },
+    //
+    // /**
+    //  * 0 => No access
+    //  * 30 => Developer access
+    //  * 40 => Maintainer access
+    //  * 60 => Admin access
+    //  * @param data
+    //  * @returns {Promise<*>}
+    //  */
+    // configureBranchAccessRightRepository: async (data) => {
+    //     const options = {
+    //         method: 'post',
+    //         url: `${url}/projects/${get(data, 'projectId')}/protected_branches`,
+    //         headers: { Authorization: `Bearer ${this.token}` },
+    //         params: {
+    //             name: get(data, 'name'),
+    //             push_access_level: get(data, 'push_access_level', 30),
+    //             merge_access_level: get(data, 'merge_access_level', 30),
+    //             unprotect_access_level: get(data, 'unprotect_access_level', 40),
+    //         },
+    //         responseType: 'json',
+    //     };
+    //
+    //     try {
+    //         const result = await axios(options);
+    //         return get(result, 'data');
+    //     } catch (err) {
+    //         console.log(err);
+    //         const errorMessage = require('../helpers/ServerErrors')(err);
+    //         throw errorMessage;
+    //     }
+    // },
+    //
+    // unprotectMasterBranch: async (data) => {
+    //     const options = {
+    //         method: 'delete',
+    //         url: `${url}/projects/${get(data, 'projectId')}/protected_branches/${get(data, 'name')}`,
+    //         headers: { Authorization: `Bearer ${this.token}` },
+    //         responseType: 'json',
+    //     };
+    //     try {
+    //         const result = await axios(options);
+    //         return get(result, 'data');
+    //     } catch (err) {
+    //         const errorMessage = require('../helpers/ServerErrors')(err);
+    //         throw errorMessage;
+    //     }
+    // },
+    //
 
-        try {
-            const result = await axios(options);
-            return get(result, 'data');
-        } catch (err) {
-            console.log(err);
-            const errorMessage = require('../helpers/ServerErrors')(err);
-            throw errorMessage;
-        }
-    }
+    //
+    // getProjects: async () => {
+    //     const options = {
+    //         method: 'get',
+    //         url: `${url}/projects?owned=true&membership=true&search=&visibility&per_page=1`,
+    //         headers: { Authorization: `Bearer ${this.token}` },
+    //         responseType: 'json',
+    //     };
+    //     try {
+    //         const result = await axios(options);
+    //         return get(result, 'data');
+    //     } catch (err) {
+    //         const errorMessage = require('../helpers/ServerErrors')(err);
+    //         throw errorMessage;
+    //     }
+    // },
 
-    async unprotectMasterBranch(data) {
-        const options = {
-            method: 'delete',
-            url: `${this.url}/projects/${get(data, 'projectId')}/protected_branches/${get(data, 'name')}`,
-            headers: { Authorization: `Bearer ${this.token}` },
-            responseType: 'json',
-        };
-        try {
-            const result = await axios(options);
-            return get(result, 'data');
-        } catch (err) {
-            const errorMessage = require('../helpers/ServerErrors')(err);
-            throw errorMessage;
-        }
-    }
+};
 
-    async groupsRepository() {
-        const options = {
-            method: 'get',
-            url: `${this.url}/groups`,
-            headers: { Authorization: `Bearer ${this.token}` },
-            responseType: 'json',
-        };
-        try {
-            const result = await axios(options);
-            return get(result, 'data');
-        } catch (err) {
-            const errorMessage = require('../helpers/ServerErrors')(err);
-            throw errorMessage;
-        }
-    }
-
-    async getProjects() {
-        const options = {
-            method: 'get',
-            url: `${this.url}/projects?owned=true&membership=true&search=&visibility&per_page=1`,
-            headers: { Authorization: `Bearer ${this.token}` },
-            responseType: 'json',
-        };
-        try {
-            const result = await axios(options);
-            return get(result, 'data');
-        } catch (err) {
-            const errorMessage = require('../helpers/ServerErrors')(err);
-            throw errorMessage;
-        }
-    }
-}
-
-module.exports = Gitlab;
 
 

@@ -41,7 +41,22 @@ module.exports = {
     getTemplatesConfiguration: () => ({
         templates: conf.get('templates'),
     }),
-    getTemplatesConfigurationByName: (templateName) => ({
-        templates: conf.get(`templates.${templateName}`),
+    getTemplatesConfigurationByName: (templateName) => conf.get(`templates.${templateName}`),
+    // Return all stored user storage repository
+    getStorageConfiguration: () => ({
+        storages: conf.get('storages'),
     }),
+    setStorageDefaultData: (data) => {
+        conf.set('storages', { ...conf.get('storages'), ...data });
+    },
+    getStorageConfigurationByName: (storageName) => conf.get(`storages.${storageName}`),
+
+    setLastProjectDefault: (data) => {
+        conf.set('lastProject', { ...conf.get('lastProject'), ...data });
+    },
+    getLastProjectDefault: () => conf.get('lastProject'),
+    setCurrentProject: (data) => {
+        conf.set('current', { ...conf.get('current'), ...data });
+    },
+    getCurrentProject: () => conf.get('current'),
 };

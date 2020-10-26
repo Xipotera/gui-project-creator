@@ -1,36 +1,43 @@
 const inquirer = require('inquirer');
 const { get } = require('lodash');
+const CLI = require('clui');
+
+const { Spinner } = CLI;
+const { verifyPersonalToken, getBranchRepository, getProjectById } = require('../../connectors/gitlab');
 
 module.exports = {
-    askWichTemplateUserWantToUse: (templateProjectList = []) => {
+    askWichTemplateUserWantToUse: (data) => {
         const questions = [
             {
                 type: 'list',
                 name: 'template',
                 message: 'Which project template you want to use ?',
                 choices: [
-                    'None',
-                    ...templateProjectList,
-                    new inquirer.Separator(),
-                    'Add a new one ...',
+                    ...Object.keys(get(data, 'templates', [])),
                 ],
-                default: 'None',
-                filter(val) {
-                    switch (val) {
-                        case 'Add a new one ...':
-                            return 'new';
-                        default:
-                            return val.toLowerCase();
-                    }
-                },
+                default: get(data, 'template'),
             },
-
-
         ];
         return inquirer.prompt(questions);
     },
+
     askNewTemplateRepositoryData: (templateProjectList = []) => {
         const questions = [
+            {
+                type: 'input',
+                name: 'name',
+                message: 'Enter a name for the template configuration:',
+                validate(value) {
+                    if (value.length) {
+                        if (templateProjectList.map((name) => name.toLowerCase()).includes(value.toLowerCase())) {
+                            return `The template configuration '${value}' already exists.\n`
+                                + 'Please enter a different name.';
+                        }
+                        return true;
+                    }
+                    return 'Please enter a name for the template configuration.';
+                },
+            },
             {
                 type: 'list',
                 name: 'server',
@@ -41,10 +48,24 @@ module.exports = {
                     'BitBucket',
                 ],
                 default: 'Gitlab',
-                filter(val) {
-                    return val.toLowerCase();
-                },
             },
+            // {
+            //     when: (answers) => get(answers, 'server') === 'Gitlab',
+            //     type: 'confirm',
+            //     name: 'server-type',
+            //     message: 'Using a personal Gitlab server ?',
+            //     default: false,
+            // },
+            // {
+            //     when: (answers) => get(answers, 'server') === 'Gitlab' && get(answers, 'server-type'),
+            //     type: 'input',
+            //     name: 'url',
+            //     message: 'Enter your personal Gitlab URL server:',
+            //     validate(value) {
+            //         const valid = /(http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(value);
+            //         return valid || 'Please enter a valid url.';
+            //     },
+            // },
             {
                 type: 'list',
                 name: 'visibility',
@@ -53,83 +74,119 @@ module.exports = {
                     'Public',
                     'Private',
                 ],
-                default: 'Public',
-                filter(val) {
-                    return val.toLowerCase();
-                },
+                default: 'Private',
+
             },
+        ];
+        return inquirer.prompt(questions);
+    },
+
+    askTemplateTokenAccess: (data) => {
+        const questions = [
             {
-                when(answers) {
-                    return get(answers, 'server') === 'gitlab'
-                        && get(answers, 'visibility') === 'private';
-                },
+                when: get(data, 'server') === 'Gitlab' && get(data, 'visibility') === 'Private',
                 type: 'input',
                 name: 'token',
-                message: 'Enter Template access token:',
-                validate(value) {
+                message: 'Enter Template Access Token:',
+                async validate(value) {
                     if (value.length) {
-                        return true;
+                        const status = new Spinner('Authenticating you, please wait...');
+                        status.start();
+                        try {
+                            await verifyPersonalToken(value);
+                            status.stop();
+                            return true;
+                        } catch (e) {
+                            status.stop();
+                            return 'Please enter a valid Access Token.';
+                        }
                     }
-                    return 'Please enter Template access token.';
+                    return 'Please enter Access Token.';
                 },
             },
+        ];
+        return inquirer.prompt(questions);
+    },
+
+    askTemplateProjectId: async (data) => {
+        const questions = [
             {
-                when(answers) {
-                    return get(answers, 'server') === 'gitlab';
-                },
+                when: get(data, 'server') === 'Gitlab',
                 type: 'input',
                 name: 'id',
                 message: 'Template project Id repository:',
-                validate(value) {
+                async validate(value) {
                     const valid = !isNaN(parseFloat(value));
-                    return valid || 'Please enter a valid project Id repository.';
+                    if (!valid) return 'Please enter a valid template project Id.';
+                    const status = new Spinner('Verifying of template project access rights...');
+                    status.start();
+                    try {
+                        await getProjectById(get(data, 'token'), value);
+                        status.stop();
+                        return true;
+                    } catch (e) {
+                        status.stop();
+                        return 'Your token does not allow access to this template project.';
+                    }
                 },
                 filter: Number,
             },
-            {
-                type: 'input',
-                name: 'name',
-                message: 'Enter a name for the template project:',
-                validate(value) {
-                    if (value.length) {
-                        if (templateProjectList.includes(value)) {
-                            return `The template configuration '${value}' already exists.\n`
-                                + 'Please enter a different name.';
-                        }
-                        return true;
-                    }
-                    return 'Please enter a name for the template project.';
-                },
-            },
+
+
         ];
         return inquirer.prompt(questions);
     },
-    // eslint-disable-next-line camelcase
-    askTemplateRepositoryDetails: ({ template_project_id, project_token }) => {
+
+    askBranchTemplateToUse: async (data) => {
+        const status = new Spinner('Searching branch(s) template project...');
+        status.start();
+        const branchs = await getBranchRepository(get(data, 'token'), get(data, 'id'));
+        status.stop();
         const questions = [
             {
-                // eslint-disable-next-line camelcase
-                when: !template_project_id,
-                type: 'input',
-                name: 'template_project_id',
-                message: 'Gitlab template project Id repository ?',
-                validate(value) {
-                    const valid = !isNaN(parseFloat(value));
-                    return valid || 'Please enter a valid Id';
-                },
-                filter: Number,
-            },
-            {
-                // eslint-disable-next-line camelcase
-                when: !project_token,
-                type: 'input',
-                name: 'project_token',
-                message: 'Set Project acces token:',
-
+                when: get(data, 'server') === 'Gitlab',
+                type: 'list',
+                name: 'branch',
+                message: 'Which branch do you want to use ?',
+                choices: branchs,
             },
         ];
         return inquirer.prompt(questions);
     },
+    askWichTemplateDelete: (templateProjectList) => {
+        const questions = [
+            {
+                type: 'list',
+                name: 'template',
+                message: 'Which project template you want to delete ?',
+                choices: [
+                    ...templateProjectList,
+                    new inquirer.Separator(),
+                    'Exit',
+                ],
+                default: 'Exit',
+                filter(val) {
+                    return val;
+                },
+            },
 
+
+        ];
+        return inquirer.prompt(questions);
+    },
+
+    askDeletionConfirmation: (template) => {
+        const questions = [
+            {
+                type: 'confirm',
+                name: 'confirm',
+                message: `Are yous sure you want delete ${template} template configuration?`,
+                default: false,
+            },
+
+
+        ];
+        return inquirer.prompt(questions);
+    },
 
 };
