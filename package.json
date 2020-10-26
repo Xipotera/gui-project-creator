@@ -1,13 +1,24 @@
 {
   "name": "@xipotera/project-creator",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "a 'gui project creator' on steroids\n",
   "main": "main.js",
   "bin": {
     "project-start": "main.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "standard-version -a"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   },
   "repository": {
     "type": "git",
@@ -41,11 +52,16 @@
     "tar-fs": "^2.1.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
     "eslint": "^6.8.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.19.1",
     "eslint-plugin-jest": "^23.3.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
-    "eslint-plugin-react": "^7.17.0"
+    "eslint-plugin-react": "^7.17.0",
+    "husky": "^3.0.9",
+    "semantic-release": "^15.13.27",
+    "standard-version": "^7.0.0"
   }
 }
