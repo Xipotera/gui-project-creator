@@ -27,8 +27,6 @@ module.exports = {
         };
         config.setStorageDefaultData(storage);
         console.log(chalk.green('Storage configuration saved!'));
-        console.log(chalk.green('All done!'));
-        process.exit();
     },
 
     deleteConfiguration: (answers) => {

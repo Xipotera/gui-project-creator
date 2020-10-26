@@ -25,10 +25,9 @@ module.exports = {
                 console.log(chalk.red('See you soon!!!'));
                 process.exit();
         }
-        // answers = { ...answers, ...await inquirer.askTemplateProjectId(answers) };
-        // answers = { ...answers, ...await inquirer.askBranchTemplateToUse(answers) };
         // Now store new user storage repository
         await saveConfiguration(answers);
+        return answers;
     },
 
     userStorageRepositoryConfigurationDeletion: async () => {

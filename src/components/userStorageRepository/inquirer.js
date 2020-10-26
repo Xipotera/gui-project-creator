@@ -3,7 +3,7 @@ const { find, get } = require('lodash');
 const CLI = require('clui');
 
 const { Spinner } = CLI;
-const { verifyPersonalToken, getBranchRepository, getProjectById } = require('../../connectors/gitlab');
+const { verifyPersonalToken } = require('../../connectors/gitlab');
 
 module.exports = {
     askNewStorageRepositoryServer: () => {
@@ -14,10 +14,7 @@ module.exports = {
                 message: 'For which Server do you want create a storage configuration ?',
                 choices: [
                     'Gitlab',
-                    new inquirer.Separator(),
-                    'None',
                 ],
-                default: 'None',
                 filter(value) {
                     return value.toLowerCase();
                 },

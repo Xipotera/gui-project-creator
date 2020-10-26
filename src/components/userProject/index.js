@@ -2,7 +2,7 @@ const CLI = require('clui');
 
 const { Spinner } = CLI;
 
-const { get } = require('lodash');
+const { get, set } = require('lodash');
 const sleep = require('sleep-promise');
 const { git } = require('cmd-executor');
 const shell = require('shelljs');
@@ -10,6 +10,7 @@ const inquirer = require('./inquirer');
 const config = require('../../config');
 
 const { getTemplateRepository } = require('../templateRepository/controller');
+const { userStorageRepositoryAddNewConfiguration } = require('../userStorageRepository');
 const { createGitlabRepository } = require('./controller');
 
 
@@ -21,6 +22,9 @@ module.exports = {
         switch (get(answers, 'server')) {
             case 'none':
                 break;
+            case 'new':
+                const storage = await userStorageRepositoryAddNewConfiguration();
+                set(answers, 'server', get(storage, 'name'));
             default:
                 answers = { ...answers, ...await inquirer.askProjectStorageVisibility(data) };
         }
