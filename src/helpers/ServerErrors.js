@@ -1,7 +1,7 @@
 const { get } = require('lodash');
 
+const { StatusCodes } = require('http-status-codes');
 const errors = require('./errors.json');
-const {StatusCodes} = require('http-status-codes');
 
 module.exports = (err) => {
     let errorStatusCode = 500;

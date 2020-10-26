@@ -2,9 +2,9 @@
   "name": "@xipotera/project-creator",
   "version": "1.0.1",
   "description": "a 'gui project creator' on steroids\n",
-  "main": "index.js",
+  "main": "main.js",
   "bin": {
-    "project-start": "./index.js"
+    "project-start": "main.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/Xipotera/gui-project-creator#readme",
   "dependencies": {
-    "@gitbeaker/node": "^25.0.0",
     "axios": "^0.20.0",
     "chalk": "^4.1.0",
     "clear": "^0.1.0",
@@ -37,11 +36,9 @@
     "minimist": "^1.2.5",
     "request": "^2.88.2",
     "shelljs": "^0.8.4",
-    "simple-git": "^2.21.0",
     "sleep-promise": "^9.0.0",
     "streaming-format": "^2.0.2",
-    "tar-fs": "^2.1.0",
-    "touch": "^3.1.0"
+    "tar-fs": "^2.1.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
