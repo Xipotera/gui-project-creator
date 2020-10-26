@@ -51,10 +51,10 @@ module.exports = {
     },
     getStorageConfigurationByName: (storageName) => conf.get(`storages.${storageName}`),
 
-    setLastProjectDefault: (data) => {
+    setProjectDefault: (data) => {
         conf.set('lastProject', { ...conf.get('lastProject'), ...data });
     },
-    getLastProjectDefault: () => conf.get('lastProject'),
+    getProjectDefault: () => conf.get('lastProject'),
     setCurrentProject: (data) => {
         conf.set('current', { ...conf.get('current'), ...data });
     },

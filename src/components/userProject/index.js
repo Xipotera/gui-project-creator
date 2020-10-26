@@ -16,7 +16,7 @@ const { createGitlabRepository } = require('./controller');
 module.exports = {
     userProjectConfiguration: async () => {
         let answers = await inquirer.askProjectConfiguration();
-        const data = { ...config.getLastProjectDefault(), ...config.getStorageConfiguration() };
+        const data = { ...config.getProjectDefault(), ...config.getStorageConfiguration() };
         answers = { ...answers, ...await inquirer.askProjectStorage(data) };
         switch (get(answers, 'server')) {
             case 'none':
@@ -26,7 +26,7 @@ module.exports = {
         }
 
         // Store last default config`
-        config.setLastProjectDefault({
+        config.setProjectDefault({
             storage: get(answers, 'server'),
             visibility: get(answers, 'visibility'),
         });
@@ -39,7 +39,7 @@ module.exports = {
         );
     },
     createRemoteRepo: async () => {
-        const project = { ...config.getLastProjectDefault(), ...config.getCurrentProject() };
+        const project = { ...config.getProjectDefault(), ...config.getCurrentProject() };
         if (['none'].includes(get(project, 'storage'))) return true;
         const storage = config.getStorageConfigurationByName(get(project, 'storage'));
         const status = new Spinner(`Creating "${get(project, 'name')}" remote repository...`);
@@ -64,7 +64,7 @@ module.exports = {
         }
     },
     projectCreation: async () => {
-        const project = { ...config.getLastProjectDefault(), ...config.getCurrentProject() };
+        const project = { ...config.getProjectDefault(), ...config.getCurrentProject() };
         const status = await new Spinner('Initializing project with template...');
         status.start();
         const template = config.getTemplatesConfigurationByName(get(project, 'template'));
@@ -83,7 +83,7 @@ module.exports = {
         }
     },
     pushInitialCommit: async () => {
-        const project = { ...config.getLastProjectDefault(), ...config.getCurrentProject() };
+        const project = { ...config.getProjectDefault(), ...config.getCurrentProject() };
         if (['none'].includes(get(project, 'storage'))) return true;
         const status = new Spinner('Initializing local repository and pushing to remote...');
         status.start();

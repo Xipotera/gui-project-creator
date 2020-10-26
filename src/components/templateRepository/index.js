@@ -8,14 +8,14 @@ const inquirer = require('./inquirer');
 
 module.exports = {
     templateSelection: async () => {
-        const data = { ...config.getLastProjectDefault(), ...config.getTemplatesConfiguration() };
+        const data = { ...config.getProjectDefault(), ...config.getTemplatesConfiguration() };
         if (isEmpty(get(data, 'templates'))) {
             console.log(chalk.red('No template configuration stored !\n'
                 + 'Please launch the configuration program to add one !'));
             process.exit();
         }
         const answers = await inquirer.askWichTemplateUserWantToUse(data);
-        config.setLastProjectDefault({ template: get(answers, 'template') });
+        config.setProjectDefault({ template: get(answers, 'template') });
     },
     templateAddNewConfiguration: async () => {
         const data = config.getTemplatesConfiguration();

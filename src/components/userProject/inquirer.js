@@ -1,5 +1,6 @@
 const inquirer = require('inquirer');
 const { get } = require('lodash');
+const files = require('../../utils/files');
 
 module.exports = {
     askProjectConfiguration: () => {
@@ -12,6 +13,9 @@ module.exports = {
                 default: argv._[0] || null,
                 validate(value) {
                     if (value.length) {
+                        if (files.directoryExists(value)) {
+                            return 'There is already a folder with the same name';
+                        }
                         return true;
                     }
                     return 'Please enter a name for the project.';

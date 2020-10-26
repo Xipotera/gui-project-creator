@@ -44,8 +44,6 @@ module.exports = {
                 message: 'On which server project template was stored ?',
                 choices: [
                     'Gitlab',
-                    'Github',
-                    'BitBucket',
                 ],
                 default: 'Gitlab',
             },

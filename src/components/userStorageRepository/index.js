@@ -21,8 +21,6 @@ module.exports = {
                 answers = { ...answers, ...await inquirer.askNamespaceStorageRepositoryData(groups) };
 
                 break;
-            case 'github':
-                console.log(chalk.red(`${get(answers, 'server')} server not yet implemented\nSorry for inconvenience!`));
             default:
                 console.log(chalk.red('See you soon!!!'));
                 process.exit();

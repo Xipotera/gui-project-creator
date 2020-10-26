@@ -14,7 +14,6 @@ module.exports = {
                 message: 'For which Server do you want create a storage configuration ?',
                 choices: [
                     'Gitlab',
-                    'Github',
                     new inquirer.Separator(),
                     'None',
                 ],
