@@ -24,7 +24,17 @@
     "type": "git",
     "url": "git+https://github.com/Xipotera/gui-project-creator.git"
   },
-  "keywords": [],
+  "keywords": [
+    "automation",
+    "start project",
+    "project",
+    "starter",
+    "create",
+    "github",
+    "gitlab",
+    "template",
+    "templating"
+    ],
   "author": "Mathieu Vie <mathieuvie@gmail.com>",
   "license": "ISC",
   "bugs": {
