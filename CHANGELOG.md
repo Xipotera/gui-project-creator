@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/Xipotera/gui-project-creator/compare/v1.1.1...v1.1.2) (2020-10-27)
+
+
+### Bug Fixes
+
+* **git:** git add all files, error with root project files ([e2a661d](https://github.com/Xipotera/gui-project-creator/commit/e2a661d4d1ce1063844d3aab82cbb23b82daae21))
+* **git:** git add all files, error with root project files ([db790ce](https://github.com/Xipotera/gui-project-creator/commit/db790ce224f48c6c8bc9f3a91a17432b837d63a8))
+* **package:** add keywords ([fa196d0](https://github.com/Xipotera/gui-project-creator/commit/fa196d001e45f9d9f2674d11f66926d97d41be3a))
+
 ### [1.1.1](https://github.com/Xipotera/gui-project-creator/compare/v1.1.0...v1.1.1) (2020-10-27)
 
 
