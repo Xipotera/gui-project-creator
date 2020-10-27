@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/Xipotera/gui-project-creator/compare/v1.1.2...v1.1.3) (2020-10-27)
+
+
+### Bug Fixes
+
+* **error:** error messaging .git exist ([5d9d354](https://github.com/Xipotera/gui-project-creator/commit/5d9d3540c2abc0c7d2bcbaeeccb5f0833f83aacf))
+
 ### [1.1.2](https://github.com/Xipotera/gui-project-creator/compare/v1.1.1...v1.1.2) (2020-10-27)
 
 
