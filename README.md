@@ -32,8 +32,29 @@ The best way to use Project Creator is to install it globally through the [NPM p
 
 #### Configuration
 
-**Coming Soon**
 
+You can change the script display title when execute the global configuration, and access to specific configuration (add & delete) for model storage repository or model templates projects 
+
+```        
+> project-start -c
+```
+        
+-   Configure storage (add & delete)      
+```
+> project-start -c storage
+```     
+-   Configure template (add & delete)  
+```
+> project-start -c template
+``` 
+
+At least, one template must be configured for working!
+
+#### Launch
+    > project-start <PROJECT NAME>
+    
+    
+    
 [1]: <https://gitlab.com/>
 [2]: <https://github.com/>
 [3]: <https://www.npmjs.com/package/@xipotera/project-creator> "Link to @xipotera/project-creator"
