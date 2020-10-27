@@ -96,7 +96,7 @@ module.exports = {
             await shell.cd(`${get(project, 'name')}`);
             await sleep(1000);
             await git.init();
-            await git.add('./*');
+            await git.add('*');
             await git.remote.add('origin', get(project, 'repository.url'));
             await git.commit('-m "Initial commit"');
             await git.push('origin', 'master');
