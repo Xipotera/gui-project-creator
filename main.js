@@ -28,7 +28,7 @@ console.log(
  * else continue
  */
 if (files.directoryExists('.git')) {
-    console.log(chalk.red(get(error, 'CURRENT_ALREADY_GIT_REPOSITORY')));
+    console.log(chalk.red('Current folder is Already a Git repository!'));
     process.exit();
 }
 run();

@@ -28,7 +28,7 @@
     "message": "Authentication error. Token required."
   },
   "CURRENT_ALREADY_GIT_REPOSITORY": {
-    "code": "TOKEN_REQUIRED",
+    "code": "CURRENT_ALREADY_GIT_REPOSITORY",
     "message": "Current folder is Already a Git repository!"
   },
   "REMOTE_REPOSITORY_ALREADY_EXIST": {
