@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/Xipotera/gui-project-creator/compare/v1.1.0...v1.1.1) (2020-10-27)
+
+
+### Bug Fixes
+
+* **package:** standard-version vulnerability ([714a947](https://github.com/Xipotera/gui-project-creator/commit/714a947c54d8c7144fa62f48c8838447867bc6b5))
+
 ## [1.1.0](https://github.com/Xipotera/gui-project-creator/compare/v1.0.0...v1.1.0) (2020-10-26)
 
 
