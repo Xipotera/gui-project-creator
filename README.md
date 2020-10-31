@@ -7,7 +7,7 @@
 
 ## General information
 
-***Currently only Gitlab is supported.***
+***Currently only Gitlab is supported for storage repository.***
 
 Small script to manage the rapid creation of a project from a template stored on a repository server ([Gitlab][1], [Github][2]) from the command line. Allows to configure several template models as well as several storage configuration on a repository server.
 
@@ -20,7 +20,7 @@ Small script to manage the rapid creation of a project from a template stored on
 
 
 ## News
-###### No news
+-  Projects templates from **Github are now allowed**
 
 ## Get started
 Learn how to use *Project Creator* and win productivity
