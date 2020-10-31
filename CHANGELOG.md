@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Xipotera/gui-project-creator/compare/v1.1.3...v1.2.0) (2020-10-31)
+
+
+### Features
+
+* **gitgub:** adding github template ([deed823](https://github.com/Xipotera/gui-project-creator/commit/deed823fbe2d38f835bda940122d621d9907ae10))
+
 ### [1.1.3](https://github.com/Xipotera/gui-project-creator/compare/v1.1.2...v1.1.3) (2020-10-27)
 
 
