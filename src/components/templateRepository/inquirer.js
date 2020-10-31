@@ -3,7 +3,8 @@ const { get } = require('lodash');
 const CLI = require('clui');
 
 const { Spinner } = CLI;
-const { verifyPersonalToken, getBranchRepository, getProjectById } = require('../../connectors/gitlab');
+const gitlab = require('../../connectors/gitlab');
+const github = require('../../connectors/github');
 
 module.exports = {
     askWichTemplateUserWantToUse: (data) => {
@@ -27,6 +28,7 @@ module.exports = {
                 type: 'input',
                 name: 'name',
                 message: 'Enter a name for the template configuration:',
+                default: 'project',
                 validate(value) {
                     if (value.length) {
                         if (templateProjectList.map((name) => name.toLowerCase()).includes(value.toLowerCase())) {
@@ -43,19 +45,20 @@ module.exports = {
                 name: 'server',
                 message: 'On which server project template was stored ?',
                 choices: [
-                    'Gitlab',
+                    { name: 'Gitlab', value: 'gitlab' },
+                    { name: 'Github', value: 'github' },
                 ],
-                default: 'Gitlab',
+                default: 1,
             },
             // {
-            //     when: (answers) => get(answers, 'server') === 'Gitlab',
+            //     when: (answers) => get(answers, 'server') === 'gitlab',
             //     type: 'confirm',
             //     name: 'server-type',
             //     message: 'Using a personal Gitlab server ?',
             //     default: false,
             // },
             // {
-            //     when: (answers) => get(answers, 'server') === 'Gitlab' && get(answers, 'server-type'),
+            //     when: (answers) => get(answers, 'server') === 'gitlab' && get(answers, 'server-type'),
             //     type: 'input',
             //     name: 'url',
             //     message: 'Enter your personal Gitlab URL server:',
@@ -69,10 +72,10 @@ module.exports = {
                 name: 'visibility',
                 message: 'Template project visibility ?',
                 choices: [
-                    'Public',
-                    'Private',
+                    { name: 'Public', value: 'public' },
+                    { name: 'Private', value: 'private' },
                 ],
-                default: 'Private',
+                default: 1,
 
             },
         ];
@@ -82,16 +85,21 @@ module.exports = {
     askTemplateTokenAccess: (data) => {
         const questions = [
             {
-                when: get(data, 'server') === 'Gitlab' && get(data, 'visibility') === 'Private',
+                when: get(data, 'visibility') === 'private',
                 type: 'input',
                 name: 'token',
-                message: 'Enter Template Access Token:',
+                message: `Enter ${get(data, 'server')} Access Token:`,
                 async validate(value) {
                     if (value.length) {
                         const status = new Spinner('Authenticating you, please wait...');
                         status.start();
                         try {
-                            await verifyPersonalToken(value);
+                            if (get(data, 'server') === 'gitlab') {
+                                await gitlab.verifyPersonalToken(value);
+                            } else {
+                                await github.verifyPersonalToken(value);
+                            }
+
                             status.stop();
                             return true;
                         } catch (e) {
@@ -109,17 +117,17 @@ module.exports = {
     askTemplateProjectId: async (data) => {
         const questions = [
             {
-                when: get(data, 'server') === 'Gitlab',
+                when: get(data, 'server') === 'gitlab',
                 type: 'input',
                 name: 'id',
                 message: 'Template project Id repository:',
                 async validate(value) {
                     const valid = !isNaN(parseFloat(value));
                     if (!valid) return 'Please enter a valid template project Id.';
-                    const status = new Spinner('Verifying of template project access rights...');
+                    const status = new Spinner('Verifying template project access rights...');
                     status.start();
                     try {
-                        await getProjectById(get(data, 'token'), value);
+                        await gitlab.getProjectById(get(data, 'token'), value);
                         status.stop();
                         return true;
                     } catch (e) {
@@ -129,7 +137,30 @@ module.exports = {
                 },
                 filter: Number,
             },
+            {
+                when: get(data, 'server') === 'github',
+                type: 'input',
+                name: 'path',
+                message: 'Template Project URL repository:',
+                async validate(value) {
+                    const status = new Spinner('Verifying template project access rights...');
+                    status.start();
+                    try {
+                        if (value.length) {
+                            await github.getProjectByPath(get(data, 'token'), value);
 
+                            status.stop();
+                            return true;
+                        }
+                    } catch (e) {
+                        status.stop();
+                        return 'Your token does not allow access to this template project.';
+                    }
+                },
+                filter(val) {
+                    return val.toLowerCase();
+                },
+            },
 
         ];
         return inquirer.prompt(questions);
@@ -138,11 +169,12 @@ module.exports = {
     askBranchTemplateToUse: async (data) => {
         const status = new Spinner('Searching branch(s) template project...');
         status.start();
-        const branchs = await getBranchRepository(get(data, 'token'), get(data, 'id'));
+        let branchs = [];
+        if (get(data, 'server') === 'gitlab') branchs = await gitlab.getBranchRepository(get(data, 'token'), get(data, 'id'));
+        else branchs = await github.getBranchRepository(get(data, 'token'), get(data, 'path'));
         status.stop();
         const questions = [
             {
-                when: get(data, 'server') === 'Gitlab',
                 type: 'list',
                 name: 'branch',
                 message: 'Which branch do you want to use ?',

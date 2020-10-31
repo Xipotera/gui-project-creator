@@ -5,7 +5,6 @@ const config = require('../../config');
 const { saveConfiguration, deleteConfiguration, getTemplateRepository } = require('./controller');
 const inquirer = require('./inquirer');
 
-
 module.exports = {
     templateSelection: async () => {
         const data = { ...config.getProjectDefault(), ...config.getTemplatesConfiguration() };
@@ -23,7 +22,9 @@ module.exports = {
         console.log(chalk.blue('Let\'s set up a new template project !'));
         let answers = await inquirer.askNewTemplateRepositoryData(templatesNames);
         answers = { ...answers, ...await inquirer.askTemplateTokenAccess(answers) };
+
         answers = { ...answers, ...await inquirer.askTemplateProjectId(answers) };
+
         answers = { ...answers, ...await inquirer.askBranchTemplateToUse(answers) };
         // Now store new template
         await saveConfiguration(answers);

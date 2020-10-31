@@ -31,8 +31,10 @@ module.exports = {
                 visibility: get(data, 'visibility'),
                 token: get(data, 'token'),
                 id: get(data, 'id'),
+                path: get(data, 'path'),
                 branch: get(data, 'branch'),
-                url: get(data, 'url') || 'https://gitlab.com/api',
+                // eslint-disable-next-line max-len
+                url: get(data, 'url') || get(data, 'server') === 'gitlab' ? 'https://gitlab.com/api' : 'https://github.com',
             },
         };
         config.setTemplateRepositoryDefaultData(template);
@@ -51,7 +53,14 @@ module.exports = {
     },
 
     getTemplateRepository: async ({
-        projectId, token, branchName, name, url, template,
+        projectId,
+        token,
+        branchName,
+        name,
+        url,
+        template,
+        server,
+        pathRepository,
     }) => {
         let gzipStream;
         const failedHttp = function (response) {
@@ -61,22 +70,28 @@ module.exports = {
             }
         };
 
-        const queryRequest = {
-            url: `${url}/v4/projects/${projectId}/repository/archive?sha=${branchName}`,
-
-        };
-
-        if (token) {
-            queryRequest.headers = {
-                Authorization: `Bearer ${token}`,
-            };
+        const queryRequest = {};
+        switch (server) {
+            case 'gitlab':
+                if (token) {
+                    queryRequest.headers = {
+                        Authorization: `Bearer ${token}`,
+                    };
+                }
+                queryRequest.url = `${url}/v4/projects/${projectId}/repository/archive?sha=${branchName}`;
+                break;
+            case 'github':
+                queryRequest.headers = {
+                    Authorization: `token ${token}`,
+                };
+                queryRequest.url = `${url}/${pathRepository}/archive/${branchName}.tar.gz`;
+                break;
+            default:
+                console.error(`Case ${server} is not yet implemented!`);
         }
-
 
         gzipStream = request(queryRequest);
         gzipStream.on('response', failedHttp);
-
-
 
         const formatter = function (stream) {
             const def = {};
