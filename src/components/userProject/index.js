@@ -74,10 +74,12 @@ module.exports = {
         const template = config.getTemplatesConfigurationByName(get(project, 'template'));
         try {
             await getTemplateRepository({
+                server: get(template, 'server'),
                 name: get(project, 'name'),
                 projectId: get(template, 'id'),
                 token: get(template, 'token'),
                 branchName: get(template, 'branch'),
+                pathRepository: get(template, 'path'),
                 url: get(template, 'url'),
                 template: get(project, 'template'),
             });

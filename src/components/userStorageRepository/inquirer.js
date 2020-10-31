@@ -13,7 +13,13 @@ module.exports = {
                 name: 'server',
                 message: 'For which Server do you want create a storage configuration ?',
                 choices: [
-                    'Gitlab',
+                    { name: 'Gitlab', value: 'gitlab' },
+                    {
+                        name: 'Github',
+                        disabled: 'Unavailable at this time',
+                        value: 'github',
+                    },
+
                 ],
                 filter(value) {
                     return value.toLowerCase();

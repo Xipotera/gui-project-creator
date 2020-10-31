@@ -21,13 +21,25 @@ module.exports = {
                 // eslint-disable-next-line camelcase
                 type: 'list',
                 name: 'choice',
-                message: 'Which part of the program do you want to configure ?',
+                message: 'What do you want to do?',
                 choices: [
-                    'User Storage Repository',
-                    'Templates',
-                    'Reset',
+                    {
+                        name: 'Configure a User Storage Repository',
+                        value: 'storage',
+                    },
+                    {
+                        name: 'Configure a project Template',
+                        value: 'template',
+                    },
+                    {
+                        name: 'Reset',
+                        value: 'reset',
+                    },
                     new inquirer.Separator(),
-                    'Exit',
+                    {
+                        name: 'Exit',
+                        value: 'exit',
+                    },
                 ],
                 filter(val) {
                     return snakeCase(val.toLowerCase());
@@ -41,10 +53,13 @@ module.exports = {
         const questions = [{
             type: 'list',
             name: 'action',
-            message: 'What do you want to do ?',
+            message: 'What action performed?',
             choices: [
                 'Add',
-                'Edit',
+                {
+                    name: 'Edit',
+                    disabled: 'Unavailable at this time',
+                },
                 'Delete',
                 new inquirer.Separator(),
                 'Exit',

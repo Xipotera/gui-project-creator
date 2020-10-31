@@ -15,35 +15,19 @@ function storeAppGlobalConfiguration(data) {
     config.setAsciiArt(data);
 }
 
-async function templateMenuAction() {
-    console.log('templateMenuAction');
+async function menuAction(options) {
     const answers = await inquirer.askActionConfiguration();
     switch (get(answers, 'action')) {
         case 'add':
-            await templateAddNewConfiguration();
+            if (options === 'storage') await userStorageRepositoryAddNewConfiguration();
+            else if (options === 'template') await templateAddNewConfiguration();
             break;
         case 'delete':
-            await templateConfigurationDeletion();
-
-
+            if (options === 'storage') await userStorageRepositoryConfigurationDeletion();
+            else if (options === 'template') await templateConfigurationDeletion();
             break;
-        default:
-            console.log(chalk.yellow(`Case ${get(answers, 'action')} not yet implemented`));
-    }
-    return answers;
-}
-
-async function userStorageRepositoryMenuAction() {
-    console.log('userStorageRepositoryMenuAction');
-    const answers = await inquirer.askActionConfiguration();
-    switch (get(answers, 'action')) {
-        case 'add':
-            await userStorageRepositoryAddNewConfiguration();
-            break;
-        case 'delete':
-            await userStorageRepositoryConfigurationDeletion();
-
-
+        case 'exit':
+            process.exit();
             break;
         default:
             console.log(chalk.yellow(`Case ${get(answers, 'action')} not yet implemented`));
@@ -58,49 +42,36 @@ async function resetConfiguration() {
         config.clearConfigStore();
         console.log(chalk.green('Successful reset!'));
     }
-    console.log(chalk.green('All done!'));
-    process.exit();
 }
 
+async function menuConfiguration() {
+    program.parse(process.argv);
+    let answers = {};
+    if (get(program, 'configure') === true) {
+        answers = await inquirer.askAppGlobalConfiguration(config.getAsciiArt());
+        if (!isEmpty(answers)) await storeAppGlobalConfiguration(answers);
+        answers = await inquirer.askProgramConfiguration();
+    }
+    switch (true) {
+        case get(answers, 'choice') === 'storage' || get(program, 'configure') === 'storage':
+        case get(answers, 'choice') === 'template' || get(program, 'configure') === 'template':
+            answers = { ...answers, ...await menuAction(get(answers, 'choice') || get(program, 'configure')) };
+            break;
+        case get(answers, 'choice') === 'reset' || get(program, 'configure') === 'reset':
+            await resetConfiguration();
+            break;
+        case get(answers, 'choice') === 'exit':
+            process.exit();
+            break;
+        default:
+    }
+    if (!isEmpty(get(answers, 'choice')) || !isEmpty(get(program, 'configure'))) await menuConfiguration();
+}
 module.exports = {
     programConfiguration: async () => {
         program.version(pkg.version);
         program.option('-c, --configure [type]', 'program configuration');
-        program.parse(process.argv);
-
-        let answers = {};
-        switch (true) {
-            case (get(program, 'configure') === true):
-                answers = await inquirer.askAppGlobalConfiguration(config.getAsciiArt());
-                if (!isEmpty(answers)) await storeAppGlobalConfiguration(answers);
-                answers = await inquirer.askProgramConfiguration();
-                switch (get(answers, 'choice')) {
-                    case 'user_storage_repository':
-                        answers = { ...answers, ...await userStorageRepositoryMenuAction() };
-                        break;
-                    case 'templates':
-                        answers = { ...answers, ...await templateMenuAction() };
-                        break;
-                    case 'reset':
-                        await resetConfiguration();
-                        break;
-                    default:
-                        process.exit();
-                }
-                break;
-            case get(program, 'configure') === 'reset':
-                await resetConfiguration();
-                break;
-            case get(program, 'configure') === 'storage':
-                answers = { ...answers, ...await userStorageRepositoryMenuAction() };
-                break;
-            case get(program, 'configure') === 'template':
-                console.log('specific configuration');
-                answers = { ...answers, ...await templateMenuAction() };
-
-                break;
-            default:
-        }
+        await menuConfiguration();
     },
 
 
