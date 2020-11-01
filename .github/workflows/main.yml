@@ -22,10 +22,10 @@ jobs:
           draft: false
           prerelease: false
       - name: Set up Node.js
-        - uses: actions/setup-node@v1
-          with:
-            node-version: 12
-            registry-url: https://registry.npmjs.org/
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
       - name: Publish Release on NPM
         - run: yarn install
         - run: npm publish --access public
