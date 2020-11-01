@@ -141,7 +141,7 @@ module.exports = {
                 when: get(data, 'server') === 'github',
                 type: 'input',
                 name: 'path',
-                message: 'Template Project URL repository:',
+                message: 'Template Project Path repository: (ex: USER/REPO)',
                 async validate(value) {
                     const status = new Spinner('Verifying template project access rights...');
                     status.start();
