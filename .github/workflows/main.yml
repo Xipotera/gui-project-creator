@@ -3,30 +3,18 @@ name: Publish
 on:
   push:
     branches:
-    - prod
+      - prod
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: false
-          prerelease: false
-      - name: Publish Release on NPM
-        - uses: actions/setup-node@v1
-          with:
-            node-version: 12
-            registry-url: https://registry.npmjs.org/
-        - run: yarn install
-        - run: npm publish --access public
-          env:
-            NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - run: yarn install
+      - run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
