@@ -12,7 +12,7 @@ module.exports = {
         const storageNames = Object.keys(get(data, 'storages', []));
         console.log(chalk.blue('Let\'s set up a new storage !'));
         let answers = await inquirer.askNewStorageRepositoryServer();
-        switch (get(answers, 'server')) {
+        switch (get(answers, 'server').toLowerCase()) {
             case 'gitlab':
                 answers = { ...answers, ...await inquirer.askStorageTokenAccess(answers) };
                 answers = { ...answers, ...await inquirer.askNewStorageName(storageNames, answers) };

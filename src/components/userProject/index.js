@@ -50,7 +50,7 @@ module.exports = {
         status.start();
         try {
             let repository;
-            switch (get(storage, 'server')) {
+            switch (get(storage, 'server').toLowerCase()) {
                 case 'gitlab':
                     repository = await createGitlabRepository({ ...project, ...storage });
                     config.setCurrentProject(

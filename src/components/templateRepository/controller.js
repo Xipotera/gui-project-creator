@@ -71,7 +71,7 @@ module.exports = {
         };
 
         const queryRequest = {};
-        switch (server) {
+        switch (server.toLowerCase()) {
             case 'gitlab':
                 if (token) {
                     queryRequest.headers = {
