@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     branches:
-    - prod
+      - prod
 
 jobs:
   build:
