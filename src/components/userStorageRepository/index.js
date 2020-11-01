@@ -12,14 +12,17 @@ module.exports = {
         const storageNames = Object.keys(get(data, 'storages', []));
         console.log(chalk.blue('Let\'s set up a new storage !'));
         let answers = await inquirer.askNewStorageRepositoryServer();
-        switch (get(answers, 'server')) {
+        switch (get(answers, 'server').toLowerCase()) {
             case 'gitlab':
+                answers = { ...answers, ...await inquirer.askStorageTokenAccess(answers) };
                 answers = { ...answers, ...await inquirer.askNewStorageName(storageNames, answers) };
-                answers = { ...answers, ...await inquirer.askUserGitlabPersonalToken(answers) };
                 // eslint-disable-next-line no-case-declarations
                 const groups = sortBy(await groupsRepository(get(answers, 'token')), ['full_path']).map((group) => ({ full_path: group.full_path, id: group.id }));
-                answers = { ...answers, ...await inquirer.askNamespaceStorageRepositoryData(groups) };
-
+                answers = { ...answers, ...await inquirer.askNamespaceStorageRepositoryData(answers, groups) };
+                break;
+            case 'github':
+                answers = { ...answers, ...await inquirer.askNewStorageName(storageNames, answers) };
+                answers = { ...answers, ...await inquirer.askStorageTokenAccess(answers) };
                 break;
             default:
                 console.log(chalk.red('See you soon!!!'));
@@ -34,6 +37,7 @@ module.exports = {
         const data = config.getStorageConfiguration();
         const storageNames = Object.keys(get(data, 'storages', []));
         let answers = await inquirer.askWichStorageDelete(storageNames);
+        if (get(answers, 'storage') === 'exit') process.exit();
         answers = { ...answers, ...await inquirer.askDeletionConfirmation(get(answers, 'storage')) };
         await deleteConfiguration(answers);
     },

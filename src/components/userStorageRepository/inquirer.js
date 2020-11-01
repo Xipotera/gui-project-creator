@@ -3,7 +3,8 @@ const { find, get } = require('lodash');
 const CLI = require('clui');
 
 const { Spinner } = CLI;
-const { verifyPersonalToken } = require('../../connectors/gitlab');
+const gitlab = require('../../connectors/gitlab');
+const github = require('../../connectors/github');
 
 module.exports = {
     askNewStorageRepositoryServer: () => {
@@ -14,11 +15,7 @@ module.exports = {
                 message: 'For which Server do you want create a storage configuration ?',
                 choices: [
                     { name: 'Gitlab', value: 'gitlab' },
-                    {
-                        name: 'Github',
-                        disabled: 'Unavailable at this time',
-                        value: 'github',
-                    },
+                    { name: 'Github', value: 'github' },
 
                 ],
                 filter(value) {
@@ -49,35 +46,41 @@ module.exports = {
             }];
         return inquirer.prompt(questions);
     },
-    askUserGitlabPersonalToken: () => {
+    askStorageTokenAccess: (data) => {
         const questions = [
             {
-                name: 'token',
                 type: 'input',
-                message: 'Enter your Gitlab Personal Access Token:',
+                name: 'token',
+                message: `Enter ${get(data, 'server')} Access Token:`,
                 async validate(value) {
                     if (value.length) {
                         const status = new Spinner('Authenticating you, please wait...');
                         status.start();
                         try {
-                            await verifyPersonalToken(value);
+                            if (get(data, 'server') === 'gitlab') {
+                                await gitlab.verifyPersonalToken(value);
+                            } else {
+                                await github.verifyPersonalToken(value);
+                            }
+
                             status.stop();
                             return true;
                         } catch (e) {
                             status.stop();
-                            return 'Please enter a valid Personal Access Token.';
+                            return 'Please enter a valid Access Token.';
                         }
                     }
-                    return 'Please enter Personal Access Token.';
+                    return 'Please enter Access Token.';
                 },
             },
-
         ];
         return inquirer.prompt(questions);
     },
-    askNamespaceStorageRepositoryData: (groups, namespaceId = undefined) => {
+
+    askNamespaceStorageRepositoryData: (data, groups, namespaceId = undefined) => {
         const questions = [
             {
+                when: get(data, 'server') === 'gitlab',
                 type: 'list',
                 name: 'namespaceId',
                 message: 'Optionally choose namespace where the project repository will be created:',
@@ -135,12 +138,10 @@ module.exports = {
                 choices: [
                     ...templateProjectList,
                     new inquirer.Separator(),
-                    'Exit',
+                    { name: 'Exit', value: 'exit' },
                 ],
-                default: 'Exit',
-                filter(val) {
-                    return val;
-                },
+                default: 'exit',
+
             },
 
 

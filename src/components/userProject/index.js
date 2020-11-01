@@ -11,7 +11,7 @@ const config = require('../../config');
 
 const { getTemplateRepository } = require('../templateRepository/controller');
 const { userStorageRepositoryAddNewConfiguration } = require('../userStorageRepository');
-const { createGitlabRepository } = require('./controller');
+const { createGitlabRepository, createGithubRepository } = require('./controller');
 
 
 module.exports = {
@@ -50,9 +50,18 @@ module.exports = {
         status.start();
         try {
             let repository;
-            switch (get(storage, 'server')) {
+            switch (get(storage, 'server').toLowerCase()) {
                 case 'gitlab':
                     repository = await createGitlabRepository({ ...project, ...storage });
+                    config.setCurrentProject(
+                        {
+                            ...config.getCurrentProject(),
+                            ...{ repository },
+                        },
+                    );
+                    break;
+                case 'github':
+                    repository = await createGithubRepository({ ...project, ...storage });
                     config.setCurrentProject(
                         {
                             ...config.getCurrentProject(),
@@ -95,6 +104,8 @@ module.exports = {
         status.start();
 
         try {
+            // eslint-disable-next-line no-unused-expressions
+            get(project, 'storage') === 'github' ? await sleep(5000) : await sleep(1000);
             await shell.cd(`${get(project, 'name')}`);
             await sleep(1000);
             await git.init();
@@ -107,3 +118,4 @@ module.exports = {
         }
     },
 };
+

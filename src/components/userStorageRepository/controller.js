@@ -34,7 +34,5 @@ module.exports = {
             config.clearSpecificKey(`storages.${get(answers, 'storage')}`);
             console.log(chalk.green(`Storage '${get(answers, 'storage')}' configuration deleted!`));
         }
-        console.log(chalk.green('All done!'));
-        process.exit();
     },
 };
