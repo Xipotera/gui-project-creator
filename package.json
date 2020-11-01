@@ -1,6 +1,6 @@
 {
   "name": "@xipotera/project-creator",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "a 'gui project creator' on steroids\n",
   "main": "main.js",
   "bin": {
