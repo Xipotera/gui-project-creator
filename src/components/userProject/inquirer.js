@@ -38,20 +38,11 @@ module.exports = {
                 choices: [
                     ...Object.keys(get(data, 'storages', [])),
                     new inquirer.Separator(),
-                    'None',
-                    'Add new storage configuration',
+                    { name: 'None', value: 'none' },
+                    { name: 'Add new storage configuration', value: 'new' },
+
                 ],
                 default: get(data, 'storage', 'None'),
-                filter(value) {
-                    switch (value) {
-                        case 'None':
-                            return 'none';
-                        case 'Add new storage configuration':
-                            return 'new';
-                        default:
-                            return value;
-                    }
-                },
             }];
         return inquirer.prompt(questions);
     },

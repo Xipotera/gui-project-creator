@@ -65,6 +65,23 @@ module.exports = {
             throw errorMessage;
         }
     },
+
+    createRepository: async (token, data) => {
+        try {
+            const result = await request('POST /user/repos', {
+                headers: {
+                    authorization: `token ${token}`,
+                },
+                ...data,
+            });
+            return get(result, 'data');
+        } catch (err) {
+            console.error(err);
+            const errorMessage = get(err, 'data');
+            throw errorMessage;
+        }
+    },
+
     //
     // groupsRepository: async (token) => {
     //     const options = {
@@ -82,23 +99,6 @@ module.exports = {
     //     }
     // },
     //
-    // createRepository: async (token, data) => {
-    //     const options = {
-    //         method: 'post',
-    //         url: `${url}/projects`,
-    //         headers: { Authorization: `Bearer ${token}` },
-    //         data,
-    //         responseType: 'json',
-    //     };
-    //
-    //     try {
-    //         const result = await axios(options);
-    //         return get(result, 'data');
-    //     } catch (err) {
-    //         const errorMessage = get(err, 'data');
-    //         throw errorMessage;
-    //     }
-    // },
 
 
 
