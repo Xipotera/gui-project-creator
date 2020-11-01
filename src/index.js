@@ -26,6 +26,7 @@ const run = async () => {
         console.log(chalk.green('All done!'));
     } catch (err) {
         if (err) {
+            console.log(err);
             console.log(chalk.red(get(err, 'message.message')));
         }
     }
